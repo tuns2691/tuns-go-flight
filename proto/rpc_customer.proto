@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package tuns_go_flight;
+option go_package = "./;pb";
+
+import "rpc_booking.proto";
+import "google/protobuf/timestamp.proto";
+
+service RPCCustomer {
+    rpc CreateCustomer(Customer) returns (Customer);
+    rpc UpdateCustomer(Customer) returns (Customer);
+    rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse);
+    rpc BookingHistory(BookingHistoryRequest) returns (BookingHistoryResponse);
+}
+
+message Customer {
+    string id = 1;
+    int32 role = 2;
+    string name = 3;
+    string email = 4;
+    string phone_number = 5;
+    string date_of_bith = 6;
+    string identity_card = 7;
+    string address = 8;
+    string membership_card = 9;
+    string password = 10;
+    int32 status = 11;
+    google.protobuf.Timestamp created_at = 12;
+    google.protobuf.Timestamp updated_at = 13;
+}
+
+message BookingHistoryRequest {
+    string customer_id = 1;
+    string flight_id = 2;
+    string booking_code = 3;
+    string flight_name = 4;
+}
+
+message BookingHistoryResponse {
+    repeated Booking history = 1;
+}
+
+message ChangePasswordRequest {
+    string customer_id = 1;
+    string old_password = 2;
+    string new_password = 3;
+    string confirm_password = 4;
+}
+
+message ChangePasswordResponse {
+    int32 code = 1;
+    string message = 2;
+}

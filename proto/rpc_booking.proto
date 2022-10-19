@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package tuns_go_flight;
+option go_package = "./;pb";
+
+import "google/protobuf/timestamp.proto";
+
+service RPCBooking {
+    rpc CreateBooking(Booking) returns (Booking);
+    rpc ViewBooking(ViewBookingRequest) returns (ViewBookingResponse);
+    rpc CancelBooking(CancelBookingRequest) returns (CancelBookingResponse);
+}
+
+message Booking {
+    string id = 1;
+    string customer_id = 2;
+    string flight_id = 3;
+    string code = 4;
+    string status = 5;
+    google.protobuf.Timestamp booked_date = 6;
+    google.protobuf.Timestamp created_at = 7;
+    google.protobuf.Timestamp updated_at = 8;
+}
+
+message ViewBookingRequest {
+    string booking_id = 1;
+}
+
+message ViewBookingResponse {
+    Booking booking = 1;
+}
+
+message CancelBookingRequest {
+    string booking_id = 1;
+    string customer_id = 2;
+}
+
+message CancelBookingResponse {
+    int32 code = 1;
+    string message = 2;
+}
