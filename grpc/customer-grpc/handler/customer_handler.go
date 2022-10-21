@@ -1,9 +1,9 @@
-package handler
+package customer_handler
 
 import (
 	"context"
-	"gin-tuns_go_flight/grpc/customer-grpc/model"
-	"gin-tuns_go_flight/grpc/customer-grpc/repo"
+	customer_model "gin-tuns_go_flight/grpc/customer-grpc/model"
+	customer_repo "gin-tuns_go_flight/grpc/customer-grpc/repo"
 	"gin-tuns_go_flight/pb"
 	"sync"
 	"time"
@@ -15,11 +15,11 @@ import (
 
 type CustomerHandler struct {
 	pb.UnimplementedRPCCustomerServer
-	customerRepository repo.CustomerRepository
+	customerRepository customer_repo.CustomerRepository
 	mu                 *sync.Mutex
 }
 
-func NewCustomerHandler(customerRepository repo.CustomerRepository) (*CustomerHandler, error) {
+func NewCustomerHandler(customerRepository customer_repo.CustomerRepository) (*CustomerHandler, error) {
 	return &CustomerHandler{
 		customerRepository: customerRepository,
 		mu:                 &sync.Mutex{},
@@ -27,7 +27,7 @@ func NewCustomerHandler(customerRepository repo.CustomerRepository) (*CustomerHa
 }
 
 func (h *CustomerHandler) CreateCustomer(ctx context.Context, in *pb.Customer) (*pb.Customer, error) {
-	req := &model.Customer{
+	req := &customer_model.Customer{
 		Id:             uuid.New(),
 		Role:           in.Role,
 		Name:           in.Name,

@@ -1,4 +1,4 @@
-package response
+package customer_response
 
 type CustomerResponse struct {
 	Id             string `json:"id"`

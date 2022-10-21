@@ -4,9 +4,9 @@ CREATE TABLE "flights" (
   "name" varchar(200) NOT NULL,	--Tên chuyến bay
   "from" varchar(10) NOT NULL,	--Từ địa điểm - cất cánh
   "to" varchar(10) NOT NULL,	--Đến địa điểm - hạ cánh
-  "date" timestamp NOT NULL,	--Thời gian bay
+  "depart_date" timestamptz NOT NULL,	--Thời gian bay
   "status" varchar(10) NOT NULL,	--Trạng thái	(1: Hoạt động, 0: Không hoạt động)
-  "availble_slot" int NOT NULL,	-- Số ghế còn trống
+  "available_slot" int NOT NULL,	-- Số ghế còn trống
   "created_at" timestamptz NOT NULL DEFAULT 'now()',	-- Ngày giờ tạo
   "updated_at" timestamptz NOT NULL DEFAULT 'now()'	-- Ngày giờ cập nhật
 );

@@ -1,24 +1,24 @@
-package customer_repo
+package booking_repo
 
 import (
 	"context"
 	"gin-tuns_go_flight/database"
-	customer_model "gin-tuns_go_flight/grpc/customer-grpc/model"
+	booking_model "gin-tuns_go_flight/grpc/booking-grpc/model"
 
 	"gorm.io/gorm"
 )
 
 //Embeded struct
 
-type CustomerRepository interface {
-	CreateCustomer(ctx context.Context, model *customer_model.Customer) (*customer_model.Customer, error)
+type BookingRepository interface {
+	CreateBooking(ctx context.Context, model *booking_model.Booking) (*booking_model.Booking, error)
 }
 
 type dbmanager struct {
 	*gorm.DB
 }
 
-func NewDBManager() (CustomerRepository, error) {
+func NewDBManager() (BookingRepository, error) {
 	db, err := database.NewGormDB()
 	if err != nil {
 		return nil, err
@@ -27,7 +27,7 @@ func NewDBManager() (CustomerRepository, error) {
 	db = db.Debug()
 
 	err = db.AutoMigrate(
-		&customer_model.Customer{},
+		&booking_model.Booking{},
 	)
 
 	if err != nil {
@@ -37,7 +37,7 @@ func NewDBManager() (CustomerRepository, error) {
 	return &dbmanager{db}, nil
 }
 
-func (m *dbmanager) CreateCustomer(ctx context.Context, model *customer_model.Customer) (*customer_model.Customer, error) {
+func (m *dbmanager) CreateBooking(ctx context.Context, model *booking_model.Booking) (*booking_model.Booking, error) {
 	if err := m.Create(model).Error; err != nil {
 		return nil, err
 	}

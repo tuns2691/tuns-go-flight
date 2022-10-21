@@ -1,7 +1,7 @@
 package main
 
 import (
-	"gin-tuns_go_flight/api/customer-api/handler"
+	customer_handler "gin-tuns_go_flight/api/customer-api/handler"
 	"gin-tuns_go_flight/middleware"
 	"gin-tuns_go_flight/pb"
 	"net/http"
@@ -26,7 +26,7 @@ func main() {
 	defer logger.Sync()
 
 	//Handler for GIN Gonic
-	h := handler.NewCustomerHandler(customerClient)
+	h := customer_handler.NewCustomerHandler(customerClient)
 	os.Setenv("GIN_MODE", "debug")
 	g := gin.Default()
 	g.Use(middleware.LoggingMiddleware(logger))

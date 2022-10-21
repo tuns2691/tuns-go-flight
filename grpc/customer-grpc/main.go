@@ -3,8 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"gin-tuns_go_flight/grpc/customer-grpc/handler"
-	"gin-tuns_go_flight/grpc/customer-grpc/repo"
+	customer_repo "gin-tuns_go_flight/grpc/customer-grpc/repo"
 	"gin-tuns_go_flight/helper"
 	"gin-tuns_go_flight/intercepter"
 	"gin-tuns_go_flight/pb"
@@ -45,12 +44,12 @@ func main() {
 		)),
 	)
 
-	customerRepository, err := repo.NewDBManager()
+	customerRepository, err := customer_repo.NewDBManager()
 	if err != nil {
 		panic(err)
 	}
 
-	h, err := handler.NewCustomerHandler(customerRepository)
+	h, err := customer_handler.NewCustomerHandler(customerRepository)
 	if err != nil {
 		panic(err)
 	}

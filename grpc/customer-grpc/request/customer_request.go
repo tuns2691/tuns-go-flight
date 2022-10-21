@@ -1,4 +1,4 @@
-package request
+package customer_request
 
 import "github.com/google/uuid"
 

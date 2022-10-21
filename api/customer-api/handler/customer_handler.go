@@ -1,8 +1,8 @@
-package handler
+package customer_handler
 
 import (
-	"gin-tuns_go_flight/api/customer-api/request"
-	"gin-tuns_go_flight/api/customer-api/response"
+	customer_request "gin-tuns_go_flight/api/customer-api/request"
+	customer_response "gin-tuns_go_flight/api/customer-api/response"
 	"gin-tuns_go_flight/pb"
 	"net/http"
 
@@ -25,7 +25,7 @@ func NewCustomerHandler(customerClient pb.RPCCustomerClient) CustomerHandler {
 }
 
 func (h *customerHandler) CreateCustomer(c *gin.Context) {
-	req := request.CreateCustomerRequest{}
+	req := customer_request.CreateCustomerRequest{}
 
 	if err := c.ShouldBind(&req); err != nil {
 		if validateErrors, ok := err.(validator.ValidationErrors); ok {
@@ -71,7 +71,7 @@ func (h *customerHandler) CreateCustomer(c *gin.Context) {
 		return
 	}
 
-	dto := &response.CustomerResponse{
+	dto := &customer_response.CustomerResponse{
 		Id:             pRes.Id,
 		Role:           pRes.Role,
 		Name:           pRes.Name,

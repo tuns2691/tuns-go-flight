@@ -1,6 +1,6 @@
-package customer_request
+package booking_request
 
-type CreateCustomerRequest struct {
+type CreateBookingRequest struct {
 	Role           int32  `json:"role" binding:"required"`
 	Name           string `json:"name" binding:"required"`
 	Email          string `json:"email" binding:"required"`
@@ -9,6 +9,6 @@ type CreateCustomerRequest struct {
 	IdentityCard   string `json:"identityCard" binding:"required"`
 	Address        string `json:"address" binding:"max=256,min=6"`
 	MembershipCard string `json:"membershipCard"`
-	Password       string `json:"password"`
-	Status         int32  `json:"status" binding:"required"`
+	CustomerId     string `json:"customerId"`
+	FlightName     string `json:"flightName"`
 }
