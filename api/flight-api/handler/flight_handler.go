@@ -14,6 +14,7 @@ import (
 
 type FlightHandler interface {
 	CreateFlight(c *gin.Context)
+	SearchFlight(c *gin.Context)
 }
 
 type flightHandler struct {
@@ -85,4 +86,80 @@ func (h *flightHandler) CreateFlight(c *gin.Context) {
 		"status":  http.StatusText(http.StatusOK),
 		"payload": dto,
 	})
+}
+
+func (h *flightHandler) SearchFlight(c *gin.Context) {
+
+	req := flight_request.SearchFlightRequest{}
+
+	if err := c.ShouldBind(&req); err != nil {
+		if validateErrors, ok := err.(validator.ValidationErrors); ok {
+			errMessages := make([]string, 0)
+			for _, v := range validateErrors {
+				errMessages = append(errMessages, v.Error())
+			}
+
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+				"status": http.StatusText(http.StatusBadRequest),
+				"error":  errMessages,
+			})
+			return
+		}
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"status": http.StatusText(http.StatusBadRequest),
+			"error":  err.Error(),
+		})
+
+		return
+	}
+
+	pFromDate, _ := time.Parse("2006/01/02 15:04:05", req.FromDate)
+	pToDate, _ := time.Parse("2006/01/02 15:04:05", req.ToDate)
+
+	pReq := &pb.SearchFlightRequest{
+		Name:     req.Name,
+		From:     req.From,
+		To:       req.To,
+		FromDate: timestamppb.New(pFromDate),
+		ToDate:   timestamppb.New(pToDate),
+	}
+
+	pRes, err := h.flightClient.SearchFlight(c.Request.Context(), pReq)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"status": http.StatusText(http.StatusInternalServerError),
+			"error":  err.Error(),
+		})
+		return
+	}
+
+	dtos := make([]*flight_response.FlightResponse, 0)
+
+	for _, v := range pRes.Flight {
+		dto := ToApiResponse(v)
+
+		dtos = append(dtos, dto)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":  http.StatusText(http.StatusOK),
+		"payload": dtos,
+	})
+}
+
+func ToApiResponse(pRes *pb.Flight) *flight_response.FlightResponse {
+	res := &flight_response.FlightResponse{
+		Id:            pRes.Id,
+		Name:          pRes.Name,
+		From:          pRes.From,
+		To:            pRes.To,
+		Status:        pRes.Status,
+		AvailableSlot: pRes.AvailableSlot,
+		DepatureDate:  pRes.DepartDate.AsTime().Format("2006-01-02 15:04:05"),
+		CreatedAt:     pRes.CreatedAt.AsTime().Format("2006-01-02 15:04:05"),
+		UpdatedAt:     pRes.UpdatedAt.AsTime().Format("2006-01-02 15:04:05"),
+	}
+
+	return res
 }

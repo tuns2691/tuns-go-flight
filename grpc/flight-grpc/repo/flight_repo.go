@@ -4,6 +4,8 @@ import (
 	"context"
 	"gin-tuns_go_flight/database"
 	flight_model "gin-tuns_go_flight/grpc/flight-grpc/model"
+	flight_request "gin-tuns_go_flight/grpc/flight-grpc/request"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -12,6 +14,7 @@ import (
 
 type FlightRepository interface {
 	CreateFlight(ctx context.Context, model *flight_model.Flight) (*flight_model.Flight, error)
+	SearchFlight(ctx context.Context, req *flight_request.SearchFlightRequest) ([]*flight_model.Flight, error)
 }
 
 type dbmanager struct {
@@ -43,4 +46,41 @@ func (m *dbmanager) CreateFlight(ctx context.Context, model *flight_model.Flight
 	}
 
 	return model, nil
+}
+
+func (m *dbmanager) SearchFlight(ctx context.Context, req *flight_request.SearchFlightRequest) ([]*flight_model.Flight, error) {
+	flights := []*flight_model.Flight{}
+
+	sbWhere := " 1=1 "
+	params := []interface{}{}
+	if len(strings.TrimSpace(req.Id)) > 0 {
+		sbWhere += " AND Id = ? "
+		params = append(params, req.Id)
+	}
+	if len(strings.TrimSpace(req.Name)) > 0 {
+		sbWhere += " AND Name = ? "
+		params = append(params, req.Name)
+	}
+	if len(strings.TrimSpace(req.From)) > 0 {
+		sbWhere += " AND From = ? "
+		params = append(params, req.From)
+	}
+	if len(strings.TrimSpace(req.To)) > 0 {
+		sbWhere += " AND To = ? "
+		params = append(params, req.To)
+	}
+	if !req.FromDate.IsZero() {
+		sbWhere += " AND depart_date >= ? "
+		params = append(params, req.FromDate)
+	}
+	if !req.ToDate.IsZero() {
+		sbWhere += " AND depart_date <= ? "
+		params = append(params, req.ToDate)
+	}
+
+	if err := m.Where(sbWhere, params).Find(&flights).Error; err != nil {
+		return nil, err
+	}
+
+	return flights, nil
 }

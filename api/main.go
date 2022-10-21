@@ -40,9 +40,15 @@ func main() {
 	//Create routes
 	gr := g.Group("/v1/api")
 
+	// API Customer
 	gr.POST("/customer/create", hCustomer.CreateCustomer)
+
+	// API Booking
 	gr.POST("/booking/create", hBooking.CreateBooking)
+
+	// API Flight
 	gr.POST("/flight/create", hFlight.CreateFlight)
+	gr.POST("/flight/search", hFlight.SearchFlight)
 
 	//Listen and serve
 	http.ListenAndServe(":3333", g)

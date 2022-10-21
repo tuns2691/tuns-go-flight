@@ -24,11 +24,12 @@ message Flight {
 }
 
 message SearchFlightRequest {
-    string name = 1;
-    string from = 2;
-    string to = 3;
-    google.protobuf.Timestamp from_date = 4;
-    google.protobuf.Timestamp to_date = 5;
+    string id = 1;
+    string name = 2;
+    string from = 3;
+    string to = 4;
+    google.protobuf.Timestamp from_date = 5;
+    google.protobuf.Timestamp to_date = 6;
 }
 
 message SearchFlightResponse {

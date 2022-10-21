@@ -2,8 +2,10 @@ package flight_handler
 
 import (
 	"context"
+	"database/sql"
 	flight_model "gin-tuns_go_flight/grpc/flight-grpc/model"
 	flight_repo "gin-tuns_go_flight/grpc/flight-grpc/repo"
+	flight_request "gin-tuns_go_flight/grpc/flight-grpc/request"
 	"gin-tuns_go_flight/pb"
 	"sync"
 	"time"
@@ -45,4 +47,35 @@ func (h *FlightHandler) CreateFlight(ctx context.Context, in *pb.Flight) (*pb.Fl
 	}
 
 	return flight.ToResponse(), nil
+}
+
+func (h *FlightHandler) SearchFlight(ctx context.Context, in *pb.SearchFlightRequest) (*pb.SearchFlightResponse, error) {
+	flights, err := h.flightRepository.SearchFlight(ctx, &flight_request.SearchFlightRequest{
+		Id:       in.Id,
+		Name:     in.Name,
+		From:     in.From,
+		To:       in.To,
+		FromDate: in.FromDate.AsTime(),
+		ToDate:   in.ToDate.AsTime(),
+	})
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, status.Error(codes.NotFound, err.Error())
+		}
+		return nil, err
+	}
+
+	pRes := &pb.SearchFlightResponse{
+		Flight: []*pb.Flight{},
+	}
+
+	for _, flight := range flights {
+		pRes.Flight = append(pRes.Flight, flight.ToResponse())
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return pRes, nil
 }

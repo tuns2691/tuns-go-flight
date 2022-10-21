@@ -9,3 +9,11 @@ type CreateFlightRequest struct {
 	Status        string `json:"status"`
 	AvailableSlot int32  `json:"slot"`
 }
+
+type SearchFlightRequest struct {
+	Name     string `json:"name"`
+	From     string `json:"from"`
+	To       string `json:"to"`
+	FromDate string `json:"fromDate"`
+	ToDate   string `json:"toDate"`
+}
