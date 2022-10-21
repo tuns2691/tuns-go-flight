@@ -7,10 +7,15 @@ import "rpc_booking.proto";
 import "google/protobuf/timestamp.proto";
 
 service RPCCustomer {
+    rpc FindById(CustomerParamId) returns (Customer);
     rpc CreateCustomer(Customer) returns (Customer);
     rpc UpdateCustomer(Customer) returns (Customer);
     rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse);
     rpc BookingHistory(BookingHistoryRequest) returns (BookingHistoryResponse);
+}
+
+message CustomerParamId {
+    string id = 1;
 }
 
 message Customer {

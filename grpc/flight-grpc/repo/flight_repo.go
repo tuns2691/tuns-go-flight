@@ -7,13 +7,16 @@ import (
 	flight_request "gin-tuns_go_flight/grpc/flight-grpc/request"
 	"strings"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 //Embeded struct
 
 type FlightRepository interface {
+	FindById(ctx context.Context, id uuid.UUID) (*flight_model.Flight, error)
 	CreateFlight(ctx context.Context, model *flight_model.Flight) (*flight_model.Flight, error)
+	UpdateFlight(ctx context.Context, model *flight_model.Flight) (*flight_model.Flight, error)
 	SearchFlight(ctx context.Context, req *flight_request.SearchFlightRequest) ([]*flight_model.Flight, error)
 }
 
@@ -40,8 +43,25 @@ func NewDBManager() (FlightRepository, error) {
 	return &dbmanager{db}, nil
 }
 
+func (m *dbmanager) FindById(ctx context.Context, id uuid.UUID) (*flight_model.Flight, error) {
+	res := flight_model.Flight{}
+	if err := m.Where(&flight_model.Flight{Id: id}).First(&res).Error; err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
 func (m *dbmanager) CreateFlight(ctx context.Context, model *flight_model.Flight) (*flight_model.Flight, error) {
 	if err := m.Create(model).Error; err != nil {
+		return nil, err
+	}
+
+	return model, nil
+}
+
+func (m *dbmanager) UpdateFlight(ctx context.Context, model *flight_model.Flight) (*flight_model.Flight, error) {
+	if err := m.Where(&flight_model.Flight{Id: model.Id}).Updates(model).Error; err != nil {
 		return nil, err
 	}
 

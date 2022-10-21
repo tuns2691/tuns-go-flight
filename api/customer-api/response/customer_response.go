@@ -10,6 +10,11 @@ type CustomerResponse struct {
 	IdentityCard   string `json:"identityCard"`
 	Address        string `json:"address"`
 	MembershipCard string `json:"membershipCard"`
-	Password       string `json:"password"`
 	Status         int32  `json:"status"`
+}
+
+type ChangePasswordResponse struct {
+	Id      string `json:"id" binding:"required"`
+	Code    string `json:"code"`
+	Message string `json:"message"`
 }

@@ -31,8 +31,8 @@ func main() {
 
 	//Handler for GIN Gonic
 	hCustomer := customer_handler.NewCustomerHandler(customerClient)
-	hBooking := booking_handler.NewBookingHandler(bookingClient)
 	hFlight := flight_handler.NewFlightHandler(flightClient)
+	hBooking := booking_handler.NewBookingHandler(bookingClient, customerClient, flightClient)
 	os.Setenv("GIN_MODE", "debug")
 	g := gin.Default()
 	g.Use(middleware.LoggingMiddleware(logger))
@@ -42,12 +42,15 @@ func main() {
 
 	// API Customer
 	gr.POST("/customer/create", hCustomer.CreateCustomer)
+	gr.POST("/customer/update", hCustomer.UpdateCustomer)
+	gr.POST("/customer/changePassword", hCustomer.ChangePassword)
 
 	// API Booking
 	gr.POST("/booking/create", hBooking.CreateBooking)
 
 	// API Flight
 	gr.POST("/flight/create", hFlight.CreateFlight)
+	gr.POST("/flight/update", hFlight.UpdateFlight)
 	gr.POST("/flight/search", hFlight.SearchFlight)
 
 	//Listen and serve

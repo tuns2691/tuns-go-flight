@@ -10,6 +10,17 @@ type CreateFlightRequest struct {
 	AvailableSlot int32  `json:"slot"`
 }
 
+type UpdateFlightRequest struct {
+	Id            string `json:"id" binding:"required"`
+	Name          string `json:"name"`
+	From          string `json:"from"`
+	To            string `json:"to"`
+	DepartDate    string `json:"departDate"`
+	DepartTime    string `json:"departTime"`
+	Status        string `json:"status"`
+	AvailableSlot int32  `json:"slot"`
+}
+
 type SearchFlightRequest struct {
 	Name     string `json:"name"`
 	From     string `json:"from"`

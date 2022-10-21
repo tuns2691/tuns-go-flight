@@ -5,6 +5,7 @@ import (
 	flight_response "gin-tuns_go_flight/api/flight-api/response"
 	"gin-tuns_go_flight/pb"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -14,6 +15,7 @@ import (
 
 type FlightHandler interface {
 	CreateFlight(c *gin.Context)
+	UpdateFlight(c *gin.Context)
 	SearchFlight(c *gin.Context)
 }
 
@@ -85,6 +87,60 @@ func (h *flightHandler) CreateFlight(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"status":  http.StatusText(http.StatusOK),
 		"payload": dto,
+	})
+}
+
+func (h *flightHandler) UpdateFlight(c *gin.Context) {
+	req := flight_request.UpdateFlightRequest{}
+
+	if err := c.ShouldBind(&req); err != nil {
+		if validateErrors, ok := err.(validator.ValidationErrors); ok {
+			errMessages := make([]string, 0)
+			for _, v := range validateErrors {
+				errMessages = append(errMessages, v.Error())
+			}
+
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+				"status": http.StatusText(http.StatusBadRequest),
+				"error":  errMessages,
+			})
+			return
+		}
+
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"status": http.StatusText(http.StatusBadRequest),
+			"error":  err.Error(),
+		})
+
+		return
+	}
+
+	pReq := &pb.Flight{
+		Id:            req.Id,
+		Name:          req.Name,
+		From:          req.From,
+		To:            req.To,
+		Status:        req.Status,
+		AvailableSlot: req.AvailableSlot,
+	}
+
+	if len(strings.TrimSpace(req.DepartDate)) > 0 && len(strings.TrimSpace(req.DepartTime)) > 0 {
+		DepartDateTime, _ := time.Parse("2006/01/02 15:04:05", req.DepartDate+" "+req.DepartTime)
+		pReq.DepartDate = timestamppb.New(DepartDateTime)
+	}
+
+	pRes, err := h.flightClient.UpdateFlight(c.Request.Context(), pReq)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"status": http.StatusText(http.StatusInternalServerError),
+			"error":  err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":  http.StatusText(http.StatusOK),
+		"payload": ToApiResponse(pRes),
 	})
 }
 

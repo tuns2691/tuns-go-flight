@@ -28,6 +28,16 @@ func NewFlightHandler(flightRepository flight_repo.FlightRepository) (*FlightHan
 	}, nil
 }
 
+func (h *FlightHandler) FindById(ctx context.Context, in *pb.FlightParamId) (*pb.Flight, error) {
+	flight, err := h.flightRepository.FindById(ctx, uuid.MustParse(in.Id))
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return flight.ToResponse(), nil
+}
+
 func (h *FlightHandler) CreateFlight(ctx context.Context, in *pb.Flight) (*pb.Flight, error) {
 	req := &flight_model.Flight{
 		Id:            uuid.New(),
@@ -41,6 +51,50 @@ func (h *FlightHandler) CreateFlight(ctx context.Context, in *pb.Flight) (*pb.Fl
 		UpdatedAt:     time.Now(),
 	}
 	flight, err := h.flightRepository.CreateFlight(ctx, req)
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return flight.ToResponse(), nil
+}
+
+func (h *FlightHandler) UpdateFlight(ctx context.Context, in *pb.Flight) (*pb.Flight, error) {
+	flightIn, err := h.flightRepository.FindById(ctx, uuid.MustParse(in.Id))
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, status.Error(codes.NotFound, err.Error())
+		}
+		return nil, err
+	}
+
+	if in.Name != "" {
+		flightIn.Name = in.Name
+	}
+
+	if in.From != "" {
+		flightIn.From = in.From
+	}
+
+	if in.To != "" {
+		flightIn.To = in.To
+	}
+
+	if in.DepartDate != nil {
+		flightIn.DepartDate = in.DepartDate.AsTime()
+	}
+
+	if in.AvailableSlot > 0 {
+		flightIn.AvailableSlot = in.AvailableSlot
+	}
+
+	if in.Status != "" {
+		flightIn.Status = in.Status
+	}
+
+	flightIn.UpdatedAt = time.Now()
+
+	flight, err := h.flightRepository.UpdateFlight(ctx, flightIn)
 
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())

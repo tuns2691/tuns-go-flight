@@ -22,6 +22,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RPCFlightClient interface {
+	FindById(ctx context.Context, in *FlightParamId, opts ...grpc.CallOption) (*Flight, error)
 	CreateFlight(ctx context.Context, in *Flight, opts ...grpc.CallOption) (*Flight, error)
 	UpdateFlight(ctx context.Context, in *Flight, opts ...grpc.CallOption) (*Flight, error)
 	SearchFlight(ctx context.Context, in *SearchFlightRequest, opts ...grpc.CallOption) (*SearchFlightResponse, error)
@@ -33,6 +34,15 @@ type rPCFlightClient struct {
 
 func NewRPCFlightClient(cc grpc.ClientConnInterface) RPCFlightClient {
 	return &rPCFlightClient{cc}
+}
+
+func (c *rPCFlightClient) FindById(ctx context.Context, in *FlightParamId, opts ...grpc.CallOption) (*Flight, error) {
+	out := new(Flight)
+	err := c.cc.Invoke(ctx, "/tuns_go_flight.RPCFlight/FindById", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *rPCFlightClient) CreateFlight(ctx context.Context, in *Flight, opts ...grpc.CallOption) (*Flight, error) {
@@ -66,6 +76,7 @@ func (c *rPCFlightClient) SearchFlight(ctx context.Context, in *SearchFlightRequ
 // All implementations must embed UnimplementedRPCFlightServer
 // for forward compatibility
 type RPCFlightServer interface {
+	FindById(context.Context, *FlightParamId) (*Flight, error)
 	CreateFlight(context.Context, *Flight) (*Flight, error)
 	UpdateFlight(context.Context, *Flight) (*Flight, error)
 	SearchFlight(context.Context, *SearchFlightRequest) (*SearchFlightResponse, error)
@@ -76,6 +87,9 @@ type RPCFlightServer interface {
 type UnimplementedRPCFlightServer struct {
 }
 
+func (UnimplementedRPCFlightServer) FindById(context.Context, *FlightParamId) (*Flight, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindById not implemented")
+}
 func (UnimplementedRPCFlightServer) CreateFlight(context.Context, *Flight) (*Flight, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateFlight not implemented")
 }
@@ -96,6 +110,24 @@ type UnsafeRPCFlightServer interface {
 
 func RegisterRPCFlightServer(s grpc.ServiceRegistrar, srv RPCFlightServer) {
 	s.RegisterService(&RPCFlight_ServiceDesc, srv)
+}
+
+func _RPCFlight_FindById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FlightParamId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCFlightServer).FindById(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/tuns_go_flight.RPCFlight/FindById",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCFlightServer).FindById(ctx, req.(*FlightParamId))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _RPCFlight_CreateFlight_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -159,6 +191,10 @@ var RPCFlight_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "tuns_go_flight.RPCFlight",
 	HandlerType: (*RPCFlightServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "FindById",
+			Handler:    _RPCFlight_FindById_Handler,
+		},
 		{
 			MethodName: "CreateFlight",
 			Handler:    _RPCFlight_CreateFlight_Handler,

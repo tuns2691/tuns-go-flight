@@ -22,6 +22,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RPCCustomerClient interface {
+	FindById(ctx context.Context, in *CustomerParamId, opts ...grpc.CallOption) (*Customer, error)
 	CreateCustomer(ctx context.Context, in *Customer, opts ...grpc.CallOption) (*Customer, error)
 	UpdateCustomer(ctx context.Context, in *Customer, opts ...grpc.CallOption) (*Customer, error)
 	ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*ChangePasswordResponse, error)
@@ -34,6 +35,15 @@ type rPCCustomerClient struct {
 
 func NewRPCCustomerClient(cc grpc.ClientConnInterface) RPCCustomerClient {
 	return &rPCCustomerClient{cc}
+}
+
+func (c *rPCCustomerClient) FindById(ctx context.Context, in *CustomerParamId, opts ...grpc.CallOption) (*Customer, error) {
+	out := new(Customer)
+	err := c.cc.Invoke(ctx, "/tuns_go_flight.RPCCustomer/FindById", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *rPCCustomerClient) CreateCustomer(ctx context.Context, in *Customer, opts ...grpc.CallOption) (*Customer, error) {
@@ -76,6 +86,7 @@ func (c *rPCCustomerClient) BookingHistory(ctx context.Context, in *BookingHisto
 // All implementations must embed UnimplementedRPCCustomerServer
 // for forward compatibility
 type RPCCustomerServer interface {
+	FindById(context.Context, *CustomerParamId) (*Customer, error)
 	CreateCustomer(context.Context, *Customer) (*Customer, error)
 	UpdateCustomer(context.Context, *Customer) (*Customer, error)
 	ChangePassword(context.Context, *ChangePasswordRequest) (*ChangePasswordResponse, error)
@@ -87,6 +98,9 @@ type RPCCustomerServer interface {
 type UnimplementedRPCCustomerServer struct {
 }
 
+func (UnimplementedRPCCustomerServer) FindById(context.Context, *CustomerParamId) (*Customer, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindById not implemented")
+}
 func (UnimplementedRPCCustomerServer) CreateCustomer(context.Context, *Customer) (*Customer, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateCustomer not implemented")
 }
@@ -110,6 +124,24 @@ type UnsafeRPCCustomerServer interface {
 
 func RegisterRPCCustomerServer(s grpc.ServiceRegistrar, srv RPCCustomerServer) {
 	s.RegisterService(&RPCCustomer_ServiceDesc, srv)
+}
+
+func _RPCCustomer_FindById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CustomerParamId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCCustomerServer).FindById(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/tuns_go_flight.RPCCustomer/FindById",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCCustomerServer).FindById(ctx, req.(*CustomerParamId))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _RPCCustomer_CreateCustomer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -191,6 +223,10 @@ var RPCCustomer_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "tuns_go_flight.RPCCustomer",
 	HandlerType: (*RPCCustomerServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "FindById",
+			Handler:    _RPCCustomer_FindById_Handler,
+		},
 		{
 			MethodName: "CreateCustomer",
 			Handler:    _RPCCustomer_CreateCustomer_Handler,

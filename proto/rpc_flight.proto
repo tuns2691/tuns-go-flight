@@ -6,9 +6,14 @@ option go_package = "./;pb";
 import "google/protobuf/timestamp.proto";
 
 service RPCFlight {
+    rpc FindById(FlightParamId) returns (Flight);
     rpc CreateFlight(Flight) returns (Flight);
     rpc UpdateFlight(Flight) returns (Flight);
     rpc SearchFlight(SearchFlightRequest) returns (SearchFlightResponse);
+}
+
+message FlightParamId {
+    string id = 1;
 }
 
 message Flight {

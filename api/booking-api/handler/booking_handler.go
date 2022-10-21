@@ -14,12 +14,19 @@ type BookingHandler interface {
 }
 
 type bookingHandler struct {
-	bookingClient pb.RPCBookingClient
+	bookingClient  pb.RPCBookingClient
+	customerClient pb.RPCCustomerClient
+	flightClient   pb.RPCFlightClient
 }
 
-func NewBookingHandler(bookingClient pb.RPCBookingClient) BookingHandler {
+func NewBookingHandler(
+	bookingClient pb.RPCBookingClient,
+	customerClient pb.RPCCustomerClient,
+	flightClient pb.RPCFlightClient) BookingHandler {
 	return &bookingHandler{
-		bookingClient: bookingClient,
+		bookingClient:  bookingClient,
+		customerClient: customerClient,
+		flightClient:   flightClient,
 	}
 }
 
