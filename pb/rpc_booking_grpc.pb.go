@@ -22,9 +22,10 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RPCBookingClient interface {
+	FindById(ctx context.Context, in *BookingParamId, opts ...grpc.CallOption) (*Booking, error)
 	CreateBooking(ctx context.Context, in *Booking, opts ...grpc.CallOption) (*Booking, error)
-	ViewBooking(ctx context.Context, in *ViewBookingRequest, opts ...grpc.CallOption) (*ViewBookingResponse, error)
-	CancelBooking(ctx context.Context, in *CancelBookingRequest, opts ...grpc.CallOption) (*CancelBookingResponse, error)
+	UpdateBooking(ctx context.Context, in *Booking, opts ...grpc.CallOption) (*Booking, error)
+	SearchBooking(ctx context.Context, in *SearchBookingRequest, opts ...grpc.CallOption) (*SearchBookingResponse, error)
 }
 
 type rPCBookingClient struct {
@@ -33,6 +34,15 @@ type rPCBookingClient struct {
 
 func NewRPCBookingClient(cc grpc.ClientConnInterface) RPCBookingClient {
 	return &rPCBookingClient{cc}
+}
+
+func (c *rPCBookingClient) FindById(ctx context.Context, in *BookingParamId, opts ...grpc.CallOption) (*Booking, error) {
+	out := new(Booking)
+	err := c.cc.Invoke(ctx, "/tuns_go_flight.RPCBooking/FindById", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *rPCBookingClient) CreateBooking(ctx context.Context, in *Booking, opts ...grpc.CallOption) (*Booking, error) {
@@ -44,18 +54,18 @@ func (c *rPCBookingClient) CreateBooking(ctx context.Context, in *Booking, opts 
 	return out, nil
 }
 
-func (c *rPCBookingClient) ViewBooking(ctx context.Context, in *ViewBookingRequest, opts ...grpc.CallOption) (*ViewBookingResponse, error) {
-	out := new(ViewBookingResponse)
-	err := c.cc.Invoke(ctx, "/tuns_go_flight.RPCBooking/ViewBooking", in, out, opts...)
+func (c *rPCBookingClient) UpdateBooking(ctx context.Context, in *Booking, opts ...grpc.CallOption) (*Booking, error) {
+	out := new(Booking)
+	err := c.cc.Invoke(ctx, "/tuns_go_flight.RPCBooking/UpdateBooking", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *rPCBookingClient) CancelBooking(ctx context.Context, in *CancelBookingRequest, opts ...grpc.CallOption) (*CancelBookingResponse, error) {
-	out := new(CancelBookingResponse)
-	err := c.cc.Invoke(ctx, "/tuns_go_flight.RPCBooking/CancelBooking", in, out, opts...)
+func (c *rPCBookingClient) SearchBooking(ctx context.Context, in *SearchBookingRequest, opts ...grpc.CallOption) (*SearchBookingResponse, error) {
+	out := new(SearchBookingResponse)
+	err := c.cc.Invoke(ctx, "/tuns_go_flight.RPCBooking/SearchBooking", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -66,9 +76,10 @@ func (c *rPCBookingClient) CancelBooking(ctx context.Context, in *CancelBookingR
 // All implementations must embed UnimplementedRPCBookingServer
 // for forward compatibility
 type RPCBookingServer interface {
+	FindById(context.Context, *BookingParamId) (*Booking, error)
 	CreateBooking(context.Context, *Booking) (*Booking, error)
-	ViewBooking(context.Context, *ViewBookingRequest) (*ViewBookingResponse, error)
-	CancelBooking(context.Context, *CancelBookingRequest) (*CancelBookingResponse, error)
+	UpdateBooking(context.Context, *Booking) (*Booking, error)
+	SearchBooking(context.Context, *SearchBookingRequest) (*SearchBookingResponse, error)
 	mustEmbedUnimplementedRPCBookingServer()
 }
 
@@ -76,14 +87,17 @@ type RPCBookingServer interface {
 type UnimplementedRPCBookingServer struct {
 }
 
+func (UnimplementedRPCBookingServer) FindById(context.Context, *BookingParamId) (*Booking, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindById not implemented")
+}
 func (UnimplementedRPCBookingServer) CreateBooking(context.Context, *Booking) (*Booking, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateBooking not implemented")
 }
-func (UnimplementedRPCBookingServer) ViewBooking(context.Context, *ViewBookingRequest) (*ViewBookingResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ViewBooking not implemented")
+func (UnimplementedRPCBookingServer) UpdateBooking(context.Context, *Booking) (*Booking, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateBooking not implemented")
 }
-func (UnimplementedRPCBookingServer) CancelBooking(context.Context, *CancelBookingRequest) (*CancelBookingResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CancelBooking not implemented")
+func (UnimplementedRPCBookingServer) SearchBooking(context.Context, *SearchBookingRequest) (*SearchBookingResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchBooking not implemented")
 }
 func (UnimplementedRPCBookingServer) mustEmbedUnimplementedRPCBookingServer() {}
 
@@ -96,6 +110,24 @@ type UnsafeRPCBookingServer interface {
 
 func RegisterRPCBookingServer(s grpc.ServiceRegistrar, srv RPCBookingServer) {
 	s.RegisterService(&RPCBooking_ServiceDesc, srv)
+}
+
+func _RPCBooking_FindById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BookingParamId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCBookingServer).FindById(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/tuns_go_flight.RPCBooking/FindById",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCBookingServer).FindById(ctx, req.(*BookingParamId))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _RPCBooking_CreateBooking_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -116,38 +148,38 @@ func _RPCBooking_CreateBooking_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RPCBooking_ViewBooking_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ViewBookingRequest)
+func _RPCBooking_UpdateBooking_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Booking)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RPCBookingServer).ViewBooking(ctx, in)
+		return srv.(RPCBookingServer).UpdateBooking(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/tuns_go_flight.RPCBooking/ViewBooking",
+		FullMethod: "/tuns_go_flight.RPCBooking/UpdateBooking",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RPCBookingServer).ViewBooking(ctx, req.(*ViewBookingRequest))
+		return srv.(RPCBookingServer).UpdateBooking(ctx, req.(*Booking))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RPCBooking_CancelBooking_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CancelBookingRequest)
+func _RPCBooking_SearchBooking_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchBookingRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RPCBookingServer).CancelBooking(ctx, in)
+		return srv.(RPCBookingServer).SearchBooking(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/tuns_go_flight.RPCBooking/CancelBooking",
+		FullMethod: "/tuns_go_flight.RPCBooking/SearchBooking",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RPCBookingServer).CancelBooking(ctx, req.(*CancelBookingRequest))
+		return srv.(RPCBookingServer).SearchBooking(ctx, req.(*SearchBookingRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -160,16 +192,20 @@ var RPCBooking_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*RPCBookingServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "FindById",
+			Handler:    _RPCBooking_FindById_Handler,
+		},
+		{
 			MethodName: "CreateBooking",
 			Handler:    _RPCBooking_CreateBooking_Handler,
 		},
 		{
-			MethodName: "ViewBooking",
-			Handler:    _RPCBooking_ViewBooking_Handler,
+			MethodName: "UpdateBooking",
+			Handler:    _RPCBooking_UpdateBooking_Handler,
 		},
 		{
-			MethodName: "CancelBooking",
-			Handler:    _RPCBooking_CancelBooking_Handler,
+			MethodName: "SearchBooking",
+			Handler:    _RPCBooking_SearchBooking_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
