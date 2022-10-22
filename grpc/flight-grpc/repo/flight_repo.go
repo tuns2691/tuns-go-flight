@@ -98,7 +98,7 @@ func (m *dbmanager) SearchFlight(ctx context.Context, req *flight_request.Search
 		params = append(params, req.ToDate)
 	}
 
-	if err := m.Where(sbWhere, params).Find(&flights).Error; err != nil {
+	if err := m.Where(sbWhere, params...).Find(&flights).Error; err != nil {
 		return nil, err
 	}
 

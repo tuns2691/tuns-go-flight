@@ -35,6 +35,7 @@ CREATE TABLE "bookings" (
   "customer_id" varchar NOT NULL,	--ID người đặt vé
   "flight_id" varchar NOT NULL,	--ID chuyến bay
   "code" varchar(20) NOT NULL,	--Mã đặt vé
+  "booked_slot" int,	-- Số ghế booking
   "status" varchar(10) NOT NULL,	-- Trạng thái
   "booked_date" timestamp NOT NULL DEFAULT 'now()',	-- Thời gian đặt vé
   "created_at" timestamptz NOT NULL DEFAULT 'now()',	-- Ngày giờ tạo

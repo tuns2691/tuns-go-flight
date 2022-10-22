@@ -15,3 +15,14 @@ type CustomerRequest struct {
 	Password       string
 	Status         int32
 }
+
+type SearchCustomerRequest struct {
+	Id             string
+	Role           int32
+	Name           string
+	Email          string
+	PhoneNumber    string
+	IdentityCard   string
+	MembershipCard string
+	Status         int32
+}

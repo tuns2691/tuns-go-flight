@@ -26,7 +26,7 @@ type RPCCustomerClient interface {
 	CreateCustomer(ctx context.Context, in *Customer, opts ...grpc.CallOption) (*Customer, error)
 	UpdateCustomer(ctx context.Context, in *Customer, opts ...grpc.CallOption) (*Customer, error)
 	ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*ChangePasswordResponse, error)
-	BookingHistory(ctx context.Context, in *BookingHistoryRequest, opts ...grpc.CallOption) (*BookingHistoryResponse, error)
+	SearchCustomer(ctx context.Context, in *SearchCustomerRequest, opts ...grpc.CallOption) (*SearchCustomerResponse, error)
 }
 
 type rPCCustomerClient struct {
@@ -73,9 +73,9 @@ func (c *rPCCustomerClient) ChangePassword(ctx context.Context, in *ChangePasswo
 	return out, nil
 }
 
-func (c *rPCCustomerClient) BookingHistory(ctx context.Context, in *BookingHistoryRequest, opts ...grpc.CallOption) (*BookingHistoryResponse, error) {
-	out := new(BookingHistoryResponse)
-	err := c.cc.Invoke(ctx, "/tuns_go_flight.RPCCustomer/BookingHistory", in, out, opts...)
+func (c *rPCCustomerClient) SearchCustomer(ctx context.Context, in *SearchCustomerRequest, opts ...grpc.CallOption) (*SearchCustomerResponse, error) {
+	out := new(SearchCustomerResponse)
+	err := c.cc.Invoke(ctx, "/tuns_go_flight.RPCCustomer/SearchCustomer", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +90,7 @@ type RPCCustomerServer interface {
 	CreateCustomer(context.Context, *Customer) (*Customer, error)
 	UpdateCustomer(context.Context, *Customer) (*Customer, error)
 	ChangePassword(context.Context, *ChangePasswordRequest) (*ChangePasswordResponse, error)
-	BookingHistory(context.Context, *BookingHistoryRequest) (*BookingHistoryResponse, error)
+	SearchCustomer(context.Context, *SearchCustomerRequest) (*SearchCustomerResponse, error)
 	mustEmbedUnimplementedRPCCustomerServer()
 }
 
@@ -110,8 +110,8 @@ func (UnimplementedRPCCustomerServer) UpdateCustomer(context.Context, *Customer)
 func (UnimplementedRPCCustomerServer) ChangePassword(context.Context, *ChangePasswordRequest) (*ChangePasswordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChangePassword not implemented")
 }
-func (UnimplementedRPCCustomerServer) BookingHistory(context.Context, *BookingHistoryRequest) (*BookingHistoryResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method BookingHistory not implemented")
+func (UnimplementedRPCCustomerServer) SearchCustomer(context.Context, *SearchCustomerRequest) (*SearchCustomerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchCustomer not implemented")
 }
 func (UnimplementedRPCCustomerServer) mustEmbedUnimplementedRPCCustomerServer() {}
 
@@ -198,20 +198,20 @@ func _RPCCustomer_ChangePassword_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RPCCustomer_BookingHistory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(BookingHistoryRequest)
+func _RPCCustomer_SearchCustomer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchCustomerRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RPCCustomerServer).BookingHistory(ctx, in)
+		return srv.(RPCCustomerServer).SearchCustomer(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/tuns_go_flight.RPCCustomer/BookingHistory",
+		FullMethod: "/tuns_go_flight.RPCCustomer/SearchCustomer",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RPCCustomerServer).BookingHistory(ctx, req.(*BookingHistoryRequest))
+		return srv.(RPCCustomerServer).SearchCustomer(ctx, req.(*SearchCustomerRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -240,8 +240,8 @@ var RPCCustomer_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _RPCCustomer_ChangePassword_Handler,
 		},
 		{
-			MethodName: "BookingHistory",
-			Handler:    _RPCCustomer_BookingHistory_Handler,
+			MethodName: "SearchCustomer",
+			Handler:    _RPCCustomer_SearchCustomer_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -105,12 +105,12 @@ func (h *FlightHandler) UpdateFlight(ctx context.Context, in *pb.Flight) (*pb.Fl
 
 func (h *FlightHandler) SearchFlight(ctx context.Context, in *pb.SearchFlightRequest) (*pb.SearchFlightResponse, error) {
 	flights, err := h.flightRepository.SearchFlight(ctx, &flight_request.SearchFlightRequest{
-		Id:       in.Id,
-		Name:     in.Name,
-		From:     in.From,
-		To:       in.To,
-		FromDate: in.FromDate.AsTime(),
-		ToDate:   in.ToDate.AsTime(),
+		Id:   in.Id,
+		Name: in.Name,
+		From: in.From,
+		To:   in.To,
+		// FromDate: in.FromDate.AsTime(),
+		// ToDate:   in.ToDate.AsTime(),
 	})
 	if err != nil {
 		if err == sql.ErrNoRows {

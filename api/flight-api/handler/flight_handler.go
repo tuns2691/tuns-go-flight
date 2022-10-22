@@ -169,15 +169,15 @@ func (h *flightHandler) SearchFlight(c *gin.Context) {
 		return
 	}
 
-	pFromDate, _ := time.Parse("2006/01/02 15:04:05", req.FromDate)
-	pToDate, _ := time.Parse("2006/01/02 15:04:05", req.ToDate)
+	// pFromDate, _ := time.Parse("2006/01/02 15:04:05", req.FromDate)
+	// pToDate, _ := time.Parse("2006/01/02 15:04:05", req.ToDate)
 
 	pReq := &pb.SearchFlightRequest{
-		Name:     req.Name,
-		From:     req.From,
-		To:       req.To,
-		FromDate: timestamppb.New(pFromDate),
-		ToDate:   timestamppb.New(pToDate),
+		Name: req.Name,
+		From: req.From,
+		To:   req.To,
+		// FromDate: timestamppb.New(pFromDate),
+		// ToDate:   timestamppb.New(pToDate),
 	}
 
 	pRes, err := h.flightClient.SearchFlight(c.Request.Context(), pReq)

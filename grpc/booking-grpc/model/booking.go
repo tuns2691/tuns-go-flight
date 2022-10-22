@@ -13,15 +13,16 @@ import (
 
 type Booking struct {
 	Id         uuid.UUID                `gorm:"type:uuid;primaryKey"`
-	CustomerId string                   `gorm:"column:customer_Id"`
+	CustomerId string                   `gorm:"column:customer_id"`
 	FlightId   string                   `gorm:"column:flight_id"`
 	Code       string                   `gorm:"column:code"`
+	BookedSlot int32                    `gorm:"column:booked_slot"`
 	BookedDate time.Time                `gorm:"column:booked_date"`
 	Status     string                   `gorm:"column:status"`
 	CreatedAt  time.Time                `gorm:"column:created_at"`
 	UpdatedAt  time.Time                `gorm:"column:updated_at"`
-	Customer   *customer_model.Customer `gorm:"foreignKey:customer_Id;references:Id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"` //Delete luôn Contacts nếu People bị Delete
-	Flight     *flight_model.Flight     `gorm:"foreignKey:flight_id;references:Id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`   //Delete luôn Contacts nếu People bị Delete
+	Customer   *customer_model.Customer `gorm:"foreignKey:customer_id;references:Id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	Flight     *flight_model.Flight     `gorm:"foreignKey:flight_id;references:Id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
 
 func (in *Booking) ToResponse() *pb.Booking {
@@ -30,6 +31,7 @@ func (in *Booking) ToResponse() *pb.Booking {
 		CustomerId: in.CustomerId,
 		FlightId:   in.FlightId,
 		Code:       in.Code,
+		BookedSlot: in.BookedSlot,
 		BookedDate: timestamppb.New(in.BookedDate),
 		Status:     in.Status,
 		CreatedAt:  timestamppb.New(in.CreatedAt),
@@ -60,6 +62,22 @@ func (in *Booking) ToResponse() *pb.Booking {
 			CreatedAt:     timestamppb.New(in.Flight.CreatedAt),
 			UpdatedAt:     timestamppb.New(in.Flight.UpdatedAt),
 		},
+	}
+
+	return res
+}
+
+func (in *Booking) ToResponseForCreate() *pb.Booking {
+	res := &pb.Booking{
+		Id:         in.Id.String(),
+		CustomerId: in.CustomerId,
+		FlightId:   in.FlightId,
+		Code:       in.Code,
+		BookedSlot: in.BookedSlot,
+		BookedDate: timestamppb.New(in.BookedDate),
+		Status:     in.Status,
+		CreatedAt:  timestamppb.New(in.CreatedAt),
+		UpdatedAt:  timestamppb.New(in.UpdatedAt),
 	}
 
 	return res

@@ -44,6 +44,7 @@ func (h *BookingHandler) CreateBooking(ctx context.Context, in *pb.Booking) (*pb
 		CustomerId: in.CustomerId,
 		FlightId:   in.FlightId,
 		Code:       in.Code,
+		BookedSlot: in.BookedSlot,
 		BookedDate: time.Now(),
 		Status:     in.Status,
 		CreatedAt:  time.Now(),
@@ -55,7 +56,7 @@ func (h *BookingHandler) CreateBooking(ctx context.Context, in *pb.Booking) (*pb
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return out.ToResponse(), nil
+	return out.ToResponseForCreate(), nil
 }
 
 func (h *BookingHandler) UpdateBooking(ctx context.Context, in *pb.Booking) (*pb.Booking, error) {
@@ -71,6 +72,10 @@ func (h *BookingHandler) UpdateBooking(ctx context.Context, in *pb.Booking) (*pb
 		req.Code = in.Code
 	}
 
+	if in.BookedSlot > 0 {
+		req.BookedSlot = in.BookedSlot
+	}
+
 	if in.Status != "" {
 		req.Status = in.Status
 	}
@@ -83,19 +88,21 @@ func (h *BookingHandler) UpdateBooking(ctx context.Context, in *pb.Booking) (*pb
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return out.ToResponse(), nil
+	return out.ToResponseForCreate(), nil
 }
 
 func (h *BookingHandler) SearchBooking(ctx context.Context, in *pb.SearchBookingRequest) (*pb.SearchBookingResponse, error) {
-	bookings, err := h.bookingRepository.SearchBooking(ctx, &booking_request.SearchBookingRequest{
+	params := &booking_request.SearchBookingRequest{
 		Id:         in.Id,
 		CustomerId: in.CustomerId,
 		FlightId:   in.FlightId,
 		Code:       in.Code,
 		Status:     in.Status,
-		FromDate:   in.FromDate.AsTime(),
-		ToDate:     in.ToDate.AsTime(),
-	})
+		// FromDate:   in.FromDate.AsTime(),
+		// ToDate:     in.ToDate.AsTime(),
+	}
+
+	bookings, err := h.bookingRepository.SearchBooking(ctx, params)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, status.Error(codes.NotFound, err.Error())

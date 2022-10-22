@@ -44,9 +44,13 @@ func main() {
 	gr.POST("/customer/create", hCustomer.CreateCustomer)
 	gr.POST("/customer/update", hCustomer.UpdateCustomer)
 	gr.POST("/customer/changePassword", hCustomer.ChangePassword)
+	gr.POST("/customer/viewBookingHistory", hBooking.BookingHistory)
+	gr.POST("/customer/searchBooking", hBooking.SearchBooking)
 
 	// API Booking
-	gr.POST("/booking/create", hBooking.CreateBooking)
+	gr.POST("/booking/create", hBooking.CustomerBooking)
+	gr.POST("/booking/guest", hBooking.GuestBooking)
+	gr.POST("/booking/cancel", hBooking.CancelBooking)
 
 	// API Flight
 	gr.POST("/flight/create", hFlight.CreateFlight)

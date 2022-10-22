@@ -50,12 +50,13 @@ message Booking {
     string customer_id = 2;
     string flight_id = 3;
     string code = 4;
-    string status = 5;
-    google.protobuf.Timestamp booked_date = 6;
-    google.protobuf.Timestamp created_at = 7;
-    google.protobuf.Timestamp updated_at = 8;
-    CustomerDTO customer = 9;
-    FlightDTO flight = 10;
+    int32 booked_slot =5;
+    string status = 6;
+    google.protobuf.Timestamp booked_date = 7;
+    google.protobuf.Timestamp created_at = 8;
+    google.protobuf.Timestamp updated_at = 9;
+    CustomerDTO customer = 10;
+    FlightDTO flight = 11;
 }
 
 message SearchBookingRequest {

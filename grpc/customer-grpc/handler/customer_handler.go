@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	customer_model "gin-tuns_go_flight/grpc/customer-grpc/model"
 	customer_repo "gin-tuns_go_flight/grpc/customer-grpc/repo"
+	customer_request "gin-tuns_go_flight/grpc/customer-grpc/request"
 	"gin-tuns_go_flight/pb"
 	"sync"
 	"time"
@@ -149,4 +150,33 @@ func (h *CustomerHandler) ChangePassword(ctx context.Context, in *pb.ChangePassw
 	}
 
 	return out, nil
+}
+
+func (h *CustomerHandler) SearchCustomer(ctx context.Context, in *pb.SearchCustomerRequest) (*pb.SearchCustomerResponse, error) {
+	customers, err := h.customerRepository.SearchCustomer(ctx, &customer_request.SearchCustomerRequest{
+		Name:         in.Name,
+		Email:        in.Email,
+		PhoneNumber:  in.PhoneNumber,
+		IdentityCard: in.IdentityCard,
+	})
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, status.Error(codes.NotFound, err.Error())
+		}
+		return nil, err
+	}
+
+	pRes := &pb.SearchCustomerResponse{
+		Customer: []*pb.Customer{},
+	}
+
+	for _, customer := range customers {
+		pRes.Customer = append(pRes.Customer, customer.ToResponse())
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return pRes, nil
 }

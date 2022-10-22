@@ -3,7 +3,6 @@ syntax = "proto3";
 package tuns_go_flight;
 option go_package = "./;pb";
 
-import "rpc_booking.proto";
 import "google/protobuf/timestamp.proto";
 
 service RPCCustomer {
@@ -11,7 +10,7 @@ service RPCCustomer {
     rpc CreateCustomer(Customer) returns (Customer);
     rpc UpdateCustomer(Customer) returns (Customer);
     rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse);
-    rpc BookingHistory(BookingHistoryRequest) returns (BookingHistoryResponse);
+    rpc SearchCustomer(SearchCustomerRequest) returns (SearchCustomerResponse);
 }
 
 message CustomerParamId {
@@ -34,15 +33,15 @@ message Customer {
     google.protobuf.Timestamp updated_at = 13;
 }
 
-message BookingHistoryRequest {
-    string customer_id = 1;
-    string flight_id = 2;
-    string booking_code = 3;
-    string flight_name = 4;
+message SearchCustomerRequest {
+    string name = 1;
+    string email = 2;
+    string phone_number = 3;
+    string identity_card = 4;
 }
 
-message BookingHistoryResponse {
-    repeated Booking history = 1;
+message SearchCustomerResponse {
+    repeated Customer customer = 1;
 }
 
 message ChangePasswordRequest {

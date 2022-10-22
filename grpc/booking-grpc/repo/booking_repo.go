@@ -102,7 +102,7 @@ func (m *dbmanager) SearchBooking(ctx context.Context, req *booking_request.Sear
 		params = append(params, req.Status)
 	}
 
-	if err := m.Where(sbWhere, params).Preload("Customer").Preload("Flight").Find(&bookings).Error; err != nil {
+	if err := m.Where(sbWhere, params...).Preload("Customer").Preload("Flight").Find(&bookings).Error; err != nil {
 		return nil, err
 	}
 
