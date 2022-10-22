@@ -1,0 +1,27 @@
+Do môi trường DEV không có môi trường linux
+=> Sẽ sử dụng môi trường Windows để develop Mock Project
+1. Cài bộ cài golang (windows)
+
+https://go.dev/doc/install
+
+2. Cài grpc
+https://grpc.io/docs/languages/go/basics/
+
+3. Clone project from GITHUB
+git clone https://github.com/tuns2691/tuns-go-flight.git
+
+4. Run script create table
+C:\Go\Github\tuns-go-flight\script
+FileName: flight_booking.sql
+
+5. Chỉnh sửa thông tin kết nối DB
+C:\Go\Github\tuns-go-flight\helper
+FileName: config.yml
+
+6. run server grpc (port 2222)
+Ex: C:\Go\Github\tuns-go-flight\grpc
+cmd: go run main.go
+
+7. Run server api (port 3333)
+C:\Go\Github\tuns-go-flight\api
+cmd: go run main.go

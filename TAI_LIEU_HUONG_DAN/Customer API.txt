@@ -1,0 +1,66 @@
+Customer API:
+
+1) Register Customer (Ðăng ký thông tin tài khoản hành khách mới)
+POST http://localhost:3333/v1/api/customer/create
+Params:
+{
+    "role": 1,
+    "name": "Nguyen Sy Tu",
+    "email": "test@gmail.com",
+    "phoneNumber": "12341234",
+    "dateOfBith": "10-10-1990",
+    "identityCard": "123456789",
+    "address": "FPT-Software",
+    "password": "123456",
+    "status": 1
+}
+
+
+2) Update Customer (Cập nhật thông tin hành khách hiện có)
+POST: http://localhost:3333/v1/api/customer/update
+{
+    "id": "0cdb8116-4d8c-4c07-8851-7d9a50d720e5",
+    "role": 1,
+    "name": "Nguyen Sy Tu",
+    "email": "test@gmail.com",
+    "phoneNumber": "12341234",
+    "dateOfBith": "10-10-1990",
+    "identityCard": "123456789",
+    "address": "FPT-Software",
+    "password": "123456",
+    "status": 1
+}
+
+3) Change Password (Hỗ trợ đổi mật khẩu)
+POST: http://localhost:3333/v1/api/customer/changePassword
+Params:
+{
+   "id": "0cdb8116-4d8c-4c07-8851-7d9a50d720e5",
+    "oldPassword": "123456",
+    "newPassword": "AAAAAAAAAAAA",
+    "confirmPassword": "AAAAAAAAAAAA"
+}
+
+4) Booking History (Xem lịch sử thông tin các chuyến bay đã đặt cho hành khách hiện đã đăng nhập)
+POST: http://localhost:3333/v1/api/customer/viewBookingHistory
+Params:
+{
+    "customerId": "12a79d3d-f135-4259-aaa0-70ee2311bff0"
+}
+
+
+5) Search Booking (Tìm kiếm thông tin đặt vé bằng cách cung cấp thông tin mã số chuyến bay, và các thông tin yêu cầu khác)
+POST: http://localhost:3333/v1/api/customer/searchBooking
+Params:
+	customerId: Id customer
+	flightId: ID flight
+	code: Mã booking
+	status: Trạng thái
+Ví dụ:
+{
+    "customerId": "12a79d3d-f135-4259-aaa0-70ee2311bff0"
+}
+
+
+
+

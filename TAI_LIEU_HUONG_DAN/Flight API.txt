@@ -1,0 +1,40 @@
+Flight API:
+
+1) Create Flight (Tạo chuyến bay mới)
+POST http://localhost:3333/v1/api/flight/create
+Params:
+{
+    "name": "VN212",
+    "from": "HAN",
+    "to": "SGN",
+    "departDate": "2022/10/23",
+    "departTime": "10:30:00",
+    "status": "Scheduled",
+    "slot": 250
+}
+
+
+
+
+2) Update Flight (Cập nhật thông tin chuyến bay hiện có)
+POST: http://localhost:3333/v1/api/flight/update
+{
+    "id": "073f8545-426c-4c6d-b42f-ad3445d6b8a6",
+    "departDate": "2022/10/26",
+    "departTime": "9:00:00",
+    "status": "Scheduled",
+    "slot": 250
+}
+
+3) Search Flight (Tìm kiếm chuyến bay theo yêu cầu)
+POST: http://localhost:3333/v1/api/flight/search
+Params:
+	name: Tên chuyến bay
+	from: Từ địa điểm - cất cánh
+	to: Đến địa điểm - cất cánh
+	
+Ví dụ:
+{
+    "name": "VN212"
+}
+
